@@ -1,0 +1,6 @@
+run
+{
+allocate channel dev1 type disk;
+set until time "to_date('2011-12-30:00:00:00', 'yyyy-mm-dd:hh24:mi:ss')";
+restore database;
+recover database; }
