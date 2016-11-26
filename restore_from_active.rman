@@ -1,0 +1,19 @@
+
+~
+RUN 
+{
+ 
+  # to manually allocate three auxiliary channels for disk issue (specifying 
+  # whatever channel id that you want):
+  ALLOCATE AUXILIARY CHANNEL aux1 DEVICE TYPE DISK;
+  ALLOCATE AUXILIARY CHANNEL aux2 DEVICE TYPE DISK;
+  ALLOCATE AUXILIARY CHANNEL aux3 DEVICE TYPE DISK;
+ 
+  DUPLICATE TARGET DATABASE TO lim from active database
+  SPFILE
+    parameter_value_convert ('ORCL','LIM')
+    set db_file_name_convert='+DATA/ORCL','+DATA/LIM','+DATA/lrn_','+DATA/LIM/lrn_'
+    set log_file_name_convert='+DATA/ORCL','+DATA/LIM','+DATA/lrn_','+DATA/LIM/lrn_'
+    set db_name='LIM'
+  NOFILENAMECHECK;
+}
