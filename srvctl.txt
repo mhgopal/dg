@@ -1,0 +1,15 @@
+This example starts (mounts) the Oracle ASM disk groups data and recovery. The user running this command must be a member of the OSASM group.
+
+srvctl start diskgroup -diskgroup "data,recovery"
+
+Example 4-24 Shutting Down a Database with the ABORT option
+
+This example does a SHUTDOWN ABORT of the database with a DB_UNIQUE_NAME of dbcrm.
+
+srvctl stop database -db dbcrm -stopoption abort
+
+
+The -z clause removes the diskgroup dependency.
+srvctl modify database -d GSMPRODN -z
+
+
