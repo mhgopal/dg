@@ -20,3 +20,5 @@ MGMTDB
 [oracle@rac1 ~]$ srvctl config mgmtdb
 [oracle@rac1 ~]$ srvctl status mgmtdb
 
+[oracle@rac1 ~]$ srvctl config scan_listener
+
