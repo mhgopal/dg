@@ -13,3 +13,10 @@ The -z clause removes the diskgroup dependency.
 srvctl modify database -d GSMPRODN -z
 
 
+srvctl add instance -d racdb -i racdb1 -n oel62-rac1
+
+
+MGMTDB
+[oracle@rac1 ~]$ srvctl config mgmtdb
+[oracle@rac1 ~]$ srvctl status mgmtdb
+
