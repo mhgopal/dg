@@ -1,0 +1,5 @@
+RUN
+{
+  ALLOCATE CHANNEL disk1 DEVICE TYPE DISK FORMAT '/tmp/%U'; 
+  backup archivelog from sequence 15 until sequence 18;
+} 
