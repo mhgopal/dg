@@ -1,0 +1,8 @@
+SID_LIST_LISTENER_stdby =
+  (SID_LIST =
+    (SID_DESC =
+      (SID_NAME = stdby)
+      (ORACLE_HOME = /u01/app/oracle/product/12.1.0/dbhome_1)
+      (PROGRAM = extproc)
+    )
+  )
