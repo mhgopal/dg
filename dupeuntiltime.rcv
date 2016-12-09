@@ -1,0 +1,14 @@
+
+run
+{
+set until time "to_date('09-dec-16 06:06:45','dd-mon-yy hh:mi:ss')";
+DUPLICATE TARGET DATABASE to oran
+ SPFILE
+    SET db_unique_name='oran' COMMENT 'Is standby'
+    set db_domain='us.oracle.com'
+    SET DB_FILE_NAME_CONVERT='DATA/ORCL12C/','DATA/ORAN/'
+    SET LOG_FILE_NAME_CONVERT='DATA/ORCL12C/','DATA/ORAN/'
+  NOFILENAMECHECK;
+}
+
+
