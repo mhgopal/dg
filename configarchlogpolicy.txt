@@ -1,0 +1,2 @@
+CONFIGURE ARCHIVELOG DELETION POLICY TO SHIPPED TO ALL STANDBY; --> Deletes once shipping the archive log to standby.
+CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON ALL STANDBY; --> Deletes once applie on standby
