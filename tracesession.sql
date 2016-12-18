@@ -1,4 +1,7 @@
-SQL> EXEC DBMS_SYSTEM.set_ev(si=>123, se=>1234, ev=>10046, le=>8, nm=>' ');
-SQL> EXEC DBMS_SYSTEM.set_ev(si=>123, se=>1234, ev=>10046, le=>0, nm=>' ');
+SELECT p.tracefile
+FROM   v$session s
+       JOIN v$process p ON s.paddr = p.addr
+WHERE  s.sid = 81;
 
-
+exec dbms_system.set_sql_trace_in_session(81,29902,true);
+exec dbms_system.set_sql_trace_in_session(81,29902,true);
