@@ -1,0 +1,10 @@
+
+[oracle@rac1 ~]$ more impdp.par
+userid=system/w
+job_name=tab_export
+directory=DATA_PUMP_DIR
+dumpfile=TST_table_exp.dmp
+logfile=imp_TST_tab_exp.log
+remap_table=famil:famil2
+[oracle@rac1 ~]$
+
