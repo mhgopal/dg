@@ -1,1 +1,12 @@
 dbca -silent -deleteInstance -nodeList rac1 -gdbName STTOOLS -instanceName STTOOLS1 -sysDBAUserName sys -sysDBAPassword w
+
+[oracle@rac1 dbs]$ dbca -silent -deleteDatabase -sourceDB STTOOLS
+Connecting to database
+9% complete
+14% complete
+19% complete
+23% complete
+28% complete
+33% complete
+38% complete
+
