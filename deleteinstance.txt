@@ -1,0 +1,1 @@
+dbca -silent -deleteInstance -nodeList rac1 -gdbName STTOOLS -instanceName STTOOLS1 -sysDBAUserName sys -sysDBAPassword w
