@@ -1,0 +1,18 @@
+dbca -silent \
+-createDatabase \
+-templateName General_Purpose.dbc \
+-gdbName DBATOOLS \
+-sid DBATOOLS \
+-SysPassword dba123 \
+-SystemPassword dba123 \
+-emConfiguration NONE \
+-redoLogFileSize 500 \
+-recoveryAreaDestination FRA \
+-storageType ASM \
+-asmSysPassword dba123 \
+-diskGroupName DATA \
+-characterSet AL32UTF8 \
+-nationalCharacterSet AL16UTF16 \
+-totalMemory 2400 \
+-databaseType MULTIPURPOSE \
+-nodelist rac1
