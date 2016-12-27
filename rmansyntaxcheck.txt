@@ -1,0 +1,5 @@
+connect target /
+connect catalog /
+run{
+backup database plus archivelog;
+}
