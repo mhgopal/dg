@@ -1,0 +1,15 @@
+To turn off RAC
+# link the oracle libraries
+$ cd $ORACLE_HOME/rdbms/lib
+$ make -f ins_rdbms.mk rac_off
+# rebuild oracle
+$ cd $ORACLE_HOME/bin
+$ relink oracle
+
+To turn on RAC
+# link the oracle libraries
+$ cd $ORACLE_HOME/rdbms/lib
+$ make -f ins_rdbms.mk rac_on
+# rebuild oracle
+$ cd $ORACLE_HOME/bin
+$ relink oracle
