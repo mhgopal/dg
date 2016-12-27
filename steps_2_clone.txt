@@ -1,0 +1,91 @@
+Step1
+Set init parameter
+
+*.audit_file_dest='/u01/app/oracle/admin/uath/adump'
+*.audit_trail='db'
+*.cluster_database=true
+*.compatible='12.1.0.2.0'
+*.control_files='+DATA'
+*.db_block_size=8192
+*.db_create_file_dest='+DATA'
+*.db_domain=''
+*.db_unique_name='uath'
+*.db_name='uath'
+*.db_recovery_file_dest='+DATA'
+*.db_recovery_file_dest_size=4560m
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=uathXDB)'
+*.enable_pluggable_database=true
+uath1.instance_number=1
+*.log_archive_dest_1='location=+DATA'
+*.memory_target=1073741824
+*.open_cursors=300
+*.processes=300
+*.remote_login_passwordfile='exclusive'
+uath1.thread=1
+uath1.undo_tablespace='UNDOTBS1'
+
+
+Step2
+Set listener
+#Adding Static Listener for duplicate
+SID_LIST_LISTENER=
+   (SID_LIST=
+        (SID_DESC=
+          (GLOBAL_DBNAME=cprd)
+          (SID_NAME=cprd1)
+          (ORACLE_HOME=/u01/app/oracle/product/12.1.0/dbhome_1/)
+        )
+        (SID_DESC=
+          (GLOBAL_DBNAME=uath)
+          (SID_NAME=uath1)
+          (ORACLE_HOME=/u01/app/oracle/product/12.1.0/dbhome_1/)
+        )
+      )
+#Adding Static Listener for duplicate
+
+
+Set tns
+
+CPRD =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 172.16.232.138)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = cprd)
+      (UR=A)
+    )
+  )
+uath =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 172.16.232.138)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = uath)
+      (UR=A)
+    )
+  )
+
+Step3
+Set password file
+
+cd $ORACLE_HOME/dbs/
+cp orapwsprd1 orapwuath1
+
+check connectivity
+sqlplus sys@sprd1
+sqlplus sys@ath1
+
+Step 4
+issue duplicate
+DUPLICATE TARGET DATABASE to UATH
+  SPFILE
+parameter_value_convert 'SPRD','UATH'
+SET DB_UNIQUE_NAME='UATH'
+set instance_number='1'
+    SET DB_FILE_NAME_CONVERT='+DATA/SPRD/','+DATA/UATH/'
+    SET LOG_FILE_NAME_CONVERT='+DATA/SPRD/','+DATA/UATH/'
+  NOFILENAMECHECK;
+
+Step 5
+connect and verify data is correct.
