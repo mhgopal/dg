@@ -3,7 +3,7 @@ Set init parameter
 
 *.audit_file_dest='/u01/app/oracle/admin/uath/adump'
 *.audit_trail='db'
-*.cluster_database=true
+*.cluster_database=false
 *.compatible='12.1.0.2.0'
 *.control_files='+DATA'
 *.db_block_size=8192
