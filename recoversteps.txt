@@ -1,0 +1,44 @@
+cp '+DATA/prim/p1.dbf' /tmp/
+scp /tmp/ destination
+cp /tmp/dest '+DATA'
+
+PRIMARY
+Take rman backup of datafile in question
+Take backup of control file
+ftp the backup pieces to standby
+restore the control file on standby
+restore the data file on standby
+restart the media recovery
++DATA/SPRD/AUTOBACKUP/2016_12_28/s_931747136.455.931747137
++DATA/SPRD/BACKUPSET/2016_12_28/nnndf0_tag20161228t023724_0.301.931747047
+
+create tablespace somenew2 datafile '+DATA' size 10m ;
+
+RMAN>
+ run
+ {
+  set newname for datafile 13 to '+DATA' ;
+restore datafile 13;
+ switch datafile 13;
+ }
+
+
+RMAN> backup current controlfile for standby ;
+catalog backuppiece '+DATA/SPRD/BACKUPSET/2016_12_28/ncnnf0_tag20161228t025046_0.465.931747847';
+
+startup nomount
+restore controlfile from '+DATA/SPRD/BACKUPSET/2016_12_28/ncnnf0_tag20161228t025046_0.465.931747847';
+alter database mount standby database;
+
+
+
+alter system set log_archive_config='dg_config=(sprd,cprd)';
+
+
+
+
+TO PRIMARY
+TO STANDBY
+
+NOT ALLOWED -- DG LINK IS BROKEN
+
