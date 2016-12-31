@@ -1,0 +1,19 @@
+Catalog the backuppiece
+catalog backuppiece ''
+run
+{
+switch newname for datafile <datafile#> to '+DATA'
+restore datafile <datafile#>
+switch datafile <datafile#>
+}
+
+
+#Backup database
+backup database plus archivelog;
+
+
+#Check archivelogs
+crosscheck archivelog all;
+delete expired backup;
+delete expired archivelog all;
+delete obsolete ;

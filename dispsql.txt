@@ -1,0 +1,108 @@
+select instance_name,host_name from v\$instance;
+
+##Tracing Session
+exec dbms_system.set_sql_trace_in_session(81,29902,true);
+
+##
+#
+Generatealert log entries
+alter session set events '942 incident(SIMULATED_ERROR)';
+drop table tablethatdoesnotexist;
+alter session set events '942 trace name context off';
+
+exec sys.dbms_system.ksdwrt(3, 'ORA-07445: SIMULATED ERROR, JUST FOR TESTING, IGNORE!!!');
+##
+oracle database Temporary tablespace usage
+--------------------------------------------------------------------------------
+
+SELECT   A.tablespace_name tablespace, D.mb_total,
+         SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_used,
+         D.mb_total - SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_free
+FROM     v$sort_segment A,
+         (
+         SELECT   B.name, C.block_size, SUM (C.bytes) / 1024 / 1024 mb_total
+         FROM     v$tablespace B, v$tempfile C
+         WHERE    B.ts#= C.ts#
+         GROUP BY B.name, C.block_size
+         ) D
+WHERE    A.tablespace_name = D.name
+GROUP by A.tablespace_name, D.mb_total
+##
+
+select 
+a.bytes "Data Files GB", 
+b.bytes "Temp Files GB", 
+c.bytes "Log Files GB", 
+d.bytes "Archive Logfiles 20 Days", 
+(a.bytes + b.bytes + c.bytes + d.bytes) "Total GB" 
+from 
+(select sum(bytes/1024/1024/1024) bytes from dba_data_files) a ,
+(select sum(bytes/1024/1024/1024) bytes from dba_temp_files) b,
+(select sum (bytes/1024/1024/1024) bytes from v$log) c,
+(select sum(BLOCKS*BLOCK_SIZE/1024/1024/1024) bytes from v$archived_log where to_date(first_time) > sysdate - 20 ) d;
+
+##
+Archive log generation in last 30 days
+--------------------------------------
+SELECT to_date(first_time) DAY,
+to_char(sum(decode(to_char(first_time,'HH24'),'00',1,0)),'999') "00",
+to_char(sum(decode(to_char(first_time,'HH24'),'01',1,0)),'999') "01",
+to_char(sum(decode(to_char(first_time,'HH24'),'02',1,0)),'999') "02",
+to_char(sum(decode(to_char(first_time,'HH24'),'03',1,0)),'999') "03",
+to_char(sum(decode(to_char(first_time,'HH24'),'04',1,0)),'999') "04",
+to_char(sum(decode(to_char(first_time,'HH24'),'05',1,0)),'999') "05",
+to_char(sum(decode(to_char(first_time,'HH24'),'06',1,0)),'999') "06",
+to_char(sum(decode(to_char(first_time,'HH24'),'07',1,0)),'999') "07",
+to_char(sum(decode(to_char(first_time,'HH24'),'08',1,0)),'999') "08",
+to_char(sum(decode(to_char(first_time,'HH24'),'09',1,0)),'999') "09",
+to_char(sum(decode(to_char(first_time,'HH24'),'10',1,0)),'999') "10",
+to_char(sum(decode(to_char(first_time,'HH24'),'11',1,0)),'999') "11",
+to_char(sum(decode(to_char(first_time,'HH24'),'12',1,0)),'999') "12",
+to_char(sum(decode(to_char(first_time,'HH24'),'13',1,0)),'999') "13",
+to_char(sum(decode(to_char(first_time,'HH24'),'14',1,0)),'999') "14",
+to_char(sum(decode(to_char(first_time,'HH24'),'15',1,0)),'999') "15",
+to_char(sum(decode(to_char(first_time,'HH24'),'16',1,0)),'999') "16",
+to_char(sum(decode(to_char(first_time,'HH24'),'17',1,0)),'999') "17",
+to_char(sum(decode(to_char(first_time,'HH24'),'18',1,0)),'999') "18",
+to_char(sum(decode(to_char(first_time,'HH24'),'19',1,0)),'999') "19",
+to_char(sum(decode(to_char(first_time,'HH24'),'20',1,0)),'999') "20",
+to_char(sum(decode(to_char(first_time,'HH24'),'21',1,0)),'999') "21",
+to_char(sum(decode(to_char(first_time,'HH24'),'22',1,0)),'999') "22",
+to_char(sum(decode(to_char(first_time,'HH24'),'23',1,0)),'999') "23"
+from
+v$log_history
+where to_date(first_time) > sysdate - 30
+GROUP by
+to_char(first_time,'YYYY-MON-DD'), to_date(first_time)
+order by to_date(first_time)
+/
+
+##
+
+archive generation for last 30 days
+--------------------------------------------
+set linesize 160
+set pagesize 100
+SELECT to_date(first_time) DAY , decode(thread#,1,'NODE_1',2,'NODE_2',3,'NODE_2'), count (*)
+from
+v$log_history
+where to_date(first_time) > sysdate - 30 
+and thread# in (select distinct thread# from v$log a) GROUP by
+to_char(first_time,'YYYY-MON-DD'), to_date(first_time), thread# order by to_date(first_time)  ;
+
+
+Change AWR snapshot intervals
+-----------------------------
+BEGIN
+DBMS_WORKLOAD_REPOSITORY.modify_snapshot_settings(
+    retention => 43200, --in minutes
+    interval  => 60); --in minutes
+END;
+/
+
+
+
+##Check materialized view refresh times
+select owner, name, last_refresh, error, status, refresh_mode  
+from  all_snapshots 
+where owner = 'owner';

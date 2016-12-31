@@ -1,0 +1,33 @@
+select instance_name,host_name from v$Instance;
+select database_role from v$database;
+select * from v$diag_info;
+select resetlogs_id,max(sequence#) 
+from v$archived_log
+group by resetlogs_id;
+
+ALTER database mount standby database;
+alter database recover managed standby database disconnect from session;
+
+
+#Switch Over commands
+
+#
+Database Switchover
+
+-- ON PRIMARY
+CONNECT / AS SYSDBA
+ALTER DATABASE COMMIT TO SWITCHOVER TO STANDBY;
+-- Mount old primary database as standby database
+STARTUP NOMOUNT;
+ALTER DATABASE MOUNT STANDBY DATABASE;
+ALTER DATABASE RECOVER MANAGED STANDBY DATABASE DISCONNECT FROM SESSION;
+
+--On the original standby database issue the following commands.
+-- Convert standby database to primary
+CONNECT / AS SYSDBA
+ALTER DATABASE COMMIT TO SWITCHOVER TO PRIMARY;
+-- Shutdown standby database
+SHUTDOWN IMMEDIATE;
+
+-- Open old standby database as primary
+STARTUP;

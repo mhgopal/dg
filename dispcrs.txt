@@ -1,0 +1,29 @@
+srvctl status database -d <db_name>
+srvctl status instance -i <inst_name> -d <db_name>
+
+crsctl stat res -t
+
+
+srvctl add database -d <db_name>
+srvctl add instance -i <inst_name> -d <db_name>
+
+
+#Check mgmtdb
+srvctl status mgmtdb
+
+#Check Listener
+srvctl status LISTENER
+srvctl status SCAN_LISTENER -n 1
+srvctl status SCAN_LISTENER -n 2
+srvctl status SCAN_LISTENER -n 3
+
+
+#OCR
+ocrconfig 
+
+#display scan
+srvctl config scan
+
+srvctl enable mgmtdb
+srvctl start mgmtdb
+srvctl status mgmtdb

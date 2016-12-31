@@ -1,0 +1,23 @@
+cd $OMS_HOME/bin
+emctl status oms -details
+cd $AGENT_HOME/bin
+emctl status agent
+emctl secure agent
+
+#Check OMS Agent
+
+
+oracle@emcc:/u01/OracleHomes/agent/core/12.1.0.4.0/bin> ./emctl status agent|grep 'Number of XML' | awk -F":" '{print $2}'
+
+
+ON OMS
+emcli login -username=sysman
+emcli get_targets
+emcli get_targets|egrep -i 'pending|unreach'
+alias OL='cd /u01/OracleHomes/gc_inst/em/EMGC_OMS1/sysman/log'
+
+ON agent
+-bash-4.1$ ./emctl status agent
+Number of XML files pending upload           : 11
+-bash-4.1$ ./emctl status agent| grep -i 'Number of XML'| awk -F":" '{print $2}'
+
