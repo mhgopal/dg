@@ -1,0 +1,135 @@
+##########################################################
+#Script to clone xxxxxx from xxxxxxxx from active database #
+#Author: Manoj                                           #
+#Date: 30th Oct 2012                                     #
+#Approximate time 1 Hour                                 #
+###########################################################
+#
+#Be very carefully while configuring listener
+#hostname and tnsnames hostname should be a perfect match
+#
+#
+
+LOG_FILE=/u01/app/oracle/diag/custom_logs/FIN1_clone.log
+RMAN_LOG=/u01/app/oracle/diag/custom_logs/FIN1_RMAN.log
+export LOG_FILE
+export RMAN_LOG
+
+
+ORACLE_SID=FIN1
+export ORACLE_SID
+
+#echo "confirm"
+#echo $ORACLE_SID
+
+ORACLE_HOME=/u01/app/oracle/product/11.2.0/dbhome_1
+export ORACLE_HOME
+echo "--------------------------------------" >> $LOG_FILE
+echo "Start of Script at `date`" >> $LOG_FILE
+
+#Drop database
+#echo "shut immediate" | sqlplus '/ a sysdba' >> $LOG_FILE
+#echo "startup nomount restrict" | sqlplus '/ as sysdba' >> $LOG_FILE
+#echo "drop database" | sqlplus '/ as sysdba' >> $LOG_FILE
+$ORACLE_HOME/bin/dbca -silent -deleteDatabase -sourceDB FINUAT -sysDBAUserName sys -sysDBAPassword xxxxxxxxx  >> $LOG_FILE
+#add exception handling here
+
+
+#Copy password file
+cp $ORACLE_HOME/dbs/orapwFIN2 $ORACLE_HOME/dbs/orapwFIN1 >> $LOG_FILE
+#add exception handling here
+
+#create password file
+#orapwd file=$ORACLE_HOME/dbs/orapwFIN1 password=satyam entries=10
+
+echo "Start of clone of FINUAT from FINPRD from active databse `date`" >> $LOG_FILE
+#Copy init file
+cp $ORACLE_HOME/dbs/bkp_init1.ora $ORACLE_HOME/dbs/initFIN1.ora >> $LOG_FILE
+#add exception handling here
+
+#Add entry to tnsnames.ora
+
+echo "FINUAT =   " >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "  (DESCRIPTION = " >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "    (ADDRESS = (PROTOCOL = TCP)(HOST = hostname)(PORT = 1621)) " >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "    (CONNECT_DATA =  " >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "      (SERVER = DEDICATED) " >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "      (SERVICE_NAME = FIN1)" >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "    )" >> $ORACLE_HOME/network/admin/tnsnames.ora
+echo "  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
+
+#Shut down if started.
+#echo "shut immediate" | sqlplus '/ as sysdba'
+
+#Start database in nomount
+echo "startup nomount pfile=/u01/app/oracle/product/11.2.0/dbhome_1/dbs/bkp_initFIN1.ora" | sqlplus '/ as sysdba' >> $LOG_FILE
+
+#create spfile from pfile
+echo "create spfile from pfile;" | sqlplus '/ as sysdba' >> $LOG_FILE
+
+#stop DB
+echo "shut immediate;" | sqlplus '/ as sysdba' >> $LOG_FILE
+
+#Stop and start listener services
+lsnrctl stop FIN1 >> $LOG_FILE
+lsnrctl start FIN1 >> $LOG_FILE
+#
+
+#start DB with Pfile
+echo "startup nomount;" | sqlplus '/ as sysdba' >> $LOG_FILE
+
+#clone from active database
+$ORACLE_HOME/bin/rman target sys/xxxx@FIN2 auxiliary sys/xxxxxxx@FIN2 msglog $RMAN_LOG << EOF
+run
+{
+allocate auxiliary channel a1  device type disk;
+allocate auxiliary channel a2  device type disk;
+allocate auxiliary channel a3  device type disk;
+allocate auxiliary channel a4  device type disk;
+allocate channel a5  device type disk;
+allocate channel a6  device type disk;
+allocate channel a7  device type disk;
+allocate channel a8  device type disk;
+duplicate database to FIN1 from active database;
+release channel a1 ;
+release channel a2 ;
+release channel a3 ;
+release channel a4 ;
+release channel a5 ;
+release channel a6 ;
+release channel a7 ;
+release channel a8 ;
+}
+EOF
+echo "Backup finished at `date`" >> $LOG_FILE
+echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" >> $LOG_FILE
+
+# add entry to /etc/oratab file
+echo "FIN1:/u01/app/oracle/product/11.2.0/dbhome_1:N #added by md86506" >> /etc/oratab
+
+echo
+echo "@ /u01/app/oracle/Backup/SCRIPTS/FIN1_POST_CLONE.sql" | sqlplus '/ as sysdba' >> $LOG_FILE
+exit ;
+
+
+#LOCAL_LISTENER='ADDRESS=(PROTOCOL=TCP)(HOST=hostname)(PORT=1621))'
+#
+#FINUAT =
+#  (ADDRESS_LIST =
+#        (ADDRESS= (PROTOCOL= IPC)(KEY= EXTPROCFINUAT))
+#        (ADDRESS= (PROTOCOL= TCP)(Host= hostname)(Port= 1621))
+#   )
+#
+#SID_LIST_FINUAT =
+#  (SID_LIST =
+#    (SID_DESC =
+#      (ORACLE_HOME= /u01/app/oracle/product/11.2.0/dbhome_1)
+#      (SID_NAME = FIN1)
+#    )
+#    (SID_DESC =
+#      (SID_NAME = PLSExtProc)
+#      (ORACLE_HOME = /u01/app/oracle/product/11.2.0/dbhome_1)
+#      (PROGRAM = extproc)
+#    )
+#  )
+#
