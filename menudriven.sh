@@ -16,7 +16,95 @@ pause(){
 }
  
 one(){
-	echo "one() called"
+       #This is for listener
+       echo "Enter Target DB Name:"
+        read MYTRGDBNM
+	echo "Enter Auxiliary DB Name:"
+        read MYADBNAME
+	echo "Enter RAC Auxiliary SID Name:"
+        read RACMYDBSID
+        echo "Oracle Home"
+        read MYOH
+        echo "Enter MYHOSTNAME"
+        read MYHOSTNAME
+        echo "Enter Auxiliary PORT"
+        read MYPORT
+
+       #This is for host
+
+      #This is for Port
+        
+cat<<EOM
+######################################
+# Entries for Static Listener
+#####################################
+EOM
+
+cat <<EOM
+SID_LIST_LISTENER=
+   (SID_LIST=
+        (SID_DESC=
+          (GLOBAL_DBNAME=$MYADBNAME)
+          (SID_NAME=$RACMYDBSID)
+          (ORACLE_HOME=$MYOH)
+        )
+      )
+EOM
+
+cat<<EOM
+
+EOM
+
+cat<<EOM
+######################################
+# Entries for Tnsnames
+#####################################
+EOM
+cat<<EOM
+$MYADBNAME=
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = $MYHOSTNAME)(PORT = MYPORT))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = $MYADBNAME)
+      (UR=A)
+    )
+  )
+EOM
+
+cat<<EOM
+######################################
+# Copy Source Password file to Auxiliary
+#####################################
+EOM
+cat <<EOM
+Copy The source passwod file on to the Auxilary's HOME Directory.
+EOM
+cat<<EOM
+######################################
+# Actual Duplicate Command
+#####################################
+EOM
+
+cat <<EOM
+######################################
+# Connect rman
+#####################################
+
+rman target sys@$MYTRGDBNAME auxiliary sys@$MYADBNAME/
+EOM
+
+cat<<EOM
+DUPLICATE TARGET DATABASE to $MYADBNAME
+  SPFILE
+parameter_value_convert '$MYTRGDBNM','$MYADBNAME'
+SET DB_UNIQUE_NAME='$MYADBNAME'
+set instance_number='1'
+    SET DB_FILE_NAME_CONVERT='+DATA/$MYTRGDBNM/','+DATA/$MYADBNAME/'
+    SET LOG_FILE_NAME_CONVERT='+DATA/$MYTRGDBNM/','+DATA/$MYDBNAME/'
+  NOFILENAMECHECK;
+EOM
+
         pause
 }
  
@@ -32,7 +120,7 @@ show_menus() {
 	echo "~~~~~~~~~~~~~~~~~~~~~"	
 	echo " M A I N - M E N U"
 	echo "~~~~~~~~~~~~~~~~~~~~~"
-	echo "1. Set Terminal"
+	echo "1. Generate Rman Duplicate Code"
 	echo "2. Reset Terminal"
 	echo "3. Exit"
 }
