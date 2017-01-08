@@ -1,0 +1,57 @@
+create tablespace ggs_data datafile '+DATA' size 128m autoextend on maxsize 10g;
+create user ggs_owner identified by ggs_owner default tablespace ggs_data temporary tablespace temp;
+create user mhgopal identified by mhg123;
+grant dba to ggs_owner;
+/*
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
+*/
+$ORACLE_HOME/gg/ggsci
+info all
+create directories
+edit params mgr
+/*
+PORT 7809
+USERID ggs_owner, PASSWORD ggs_owner
+PURGEOLDEXTRACTS /u01/OracleHomes/db/product/dbhome_1/gg/dirdat/ex, USECHECKPOINTS
+*/
+edit extract ext2
+/*
+EXTRACT ext2
+USERID ggs_owner, PASSWORD ggs_owner
+RMTHOST 192.168.190.131, MGRPORT 7809
+RMTTRAIL /u01/OracleHomes/db/product/dbhome_1/gg/dirdat/rt
+TABLE mhgopal.test;
+*/
+edit replicat rep2
+/*
+REPLICAT rep2
+ASSUMETARGETDEFS
+USERID ggs_owner, PASSWORD ggs_owner
+MAP mhgopal.test, TARGET mhgopal.test2;
+*/
+
+--set up ddl replication
+@marker_setup
+--We need grants before we can run the ddl_setup
+/*
+grant connect, resource to ggs_owner;
+grant select any dictionary, select any table to ggs_owner;
+grant create table to ggs_owner;
+grant flashback any table to ggs_owner;
+grant execute on dbms_flashback to ggs_owner;
+grant execute on utl_file to ggs_owner;
+grant create any table to ggs_owner;
+grant insert any table to ggs_owner;
+grant update any table to ggs_owner;
+grant delete any table to ggs_owner;
+grant drop any table to ggs_owner;
+grant create any table to ggs_owner;
+grant create any view to ggs_owner;
+grant create any procedure to ggs_owner;
+grant create any sequence to ggs_owner;
+grant create any index to ggs_owner;
+grant create any trigger to ggs_owner;
+grant create any view to ggs_owner;
+*/
+@ddl_setup
+
