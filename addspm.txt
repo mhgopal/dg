@@ -1,0 +1,1 @@
+http://dbastreet.com/blog/?tag=dbms_spm-modify-execution-plan-with-hint
