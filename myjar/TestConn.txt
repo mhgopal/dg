@@ -1,0 +1,3 @@
+#host:port:service:u:p
+10.0.0.50:1521:emrepus.us.oracle.com:dbsnmp:dbsnmp
+10.0.0.220:1521:scrncy:dbsnmp:dbsnmp
