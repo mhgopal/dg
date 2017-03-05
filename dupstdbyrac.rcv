@@ -1,0 +1,21 @@
+connect target sys/w@sprd;
+connect auxiliary /;
+run{
+allocate auxiliary channel c1 device type disk;
+allocate auxiliary channel c2 device type disk;
+allocate auxiliary channel c3 device type disk;
+allocate auxiliary channel c4 device type disk;
+allocate auxiliary channel c5 device type disk;
+allocate auxiliary channel c6 device type disk;
+allocate auxiliary channel c7 device type disk;
+duplicate target database for standby
+spfile
+parameter_value_convert 'sprd','cprd'
+set instance_number='1'
+set control_files='+DATA'
+set db_file_name_convert 'sprd','cprd'
+set log_file_name_convert 'sprd','cprd'
+set db_unique_name='cprd'
+backup location '/backup/' nofilenamecheck;
+}
+
