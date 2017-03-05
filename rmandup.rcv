@@ -1,0 +1,25 @@
+##Make a connection as auxiliary
+#
+rman auxiliary /
+
+#Fire up the duplicate command
+
+#rman 
+run{
+allocate auxiliary channel c1 device type disk;
+allocate auxiliary channel c2 device type disk;
+allocate auxiliary channel c3 device type disk;
+allocate auxiliary channel c4 device type disk;
+allocate auxiliary channel c5 device type disk;
+allocate auxiliary channel c6 device type disk;
+allocate auxiliary channel c7 device type disk;
+allocate auxiliary channel c8 device type disk;
+allocate auxiliary channel c9 device type disk;
+duplicate target database to tiny
+spfile
+parameter_value_convert 'emrepus','tiny'
+set db_file_name_convert='emrepus','tiny'
+set log_file_name_convert='emrepus','tiny'
+backup location '/u01/OracleHomes/' nofilenamecheck;
+}
+
