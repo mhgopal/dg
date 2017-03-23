@@ -1,0 +1,17 @@
+#$GI_HOME/bin/ocrconfig -export <file_name>
+
+Shutdown CRS
+#crsctl stop crs
+
+#$GI_HOME/crs/install/rootcrs.pl -deconfig -force -verbose as root on all remote nodes:
+
+Final Node: $GI_HOME/crs/install/rootcrs.pl -deconfig -force -verbose -keepdg
+
+GI deinstall tool
+#$GI_HOME/deinstall/deinstall
+
+ Reinstall Oracle Grid Infrastructure in new home and run root.sh scripts when prompted
+
+ At this point you could re-import the OCR export to recreate the resources but I opted to re-add by hand using
+
+
